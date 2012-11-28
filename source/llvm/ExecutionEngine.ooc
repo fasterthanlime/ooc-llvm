@@ -3,11 +3,10 @@ import Core
 
 // Generic values
 GenericValue: cover from LLVMGenericValueRef {
-//    new: extern(LLVMCreateGenericValueOfInt) static func ~int (Type, ULLong, isSigned: Int) -> This
-//    new: extern(LLVMCreateGenericValueOfPointer) static func ~pointer (Pointer) -> This
-//    new: extern(LLVMCreateGenericValueOfFloat) static func ~float (Type, Double) -> This
+    newPointer: extern(LLVMCreateGenericValueOfPointer) static func ~pointer (Pointer) -> This
+    newFloat: extern(LLVMCreateGenericValueOfFloat) static func ~float (Type, Double) -> This
 
-    new: extern(LLVMCreateGenericValueOfInt) static func (Type, ULLong, Int) -> This
+    newInt: extern(LLVMCreateGenericValueOfInt) static func (Type, ULLong, Int) -> This
 
     intWidth: extern(LLVMGenericValueIntWidth) func -> UInt
     toInt: extern(LLVMGenericValueToInt) func (isSigned: Int) -> ULLong

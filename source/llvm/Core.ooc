@@ -59,6 +59,8 @@ Module: cover from LLVMModuleRef {
         fn
     }
 
+    getFunction: extern(LLVMGetNamedFunction) func (name: CString) -> Function
+
     writeBitcode: extern(LLVMWriteBitcodeToFile)       func ~toFile (path: CString) -> Int
     writeBitcode: extern(LLVMWriteBitcodeToFD)         func ~toFD (fd, shouldClose, unbuffered: Int) -> Int
     writeBitcode: extern(LLVMWriteBitcodeToFileHandle) func ~toFileHandle (handle: Int) -> Int
