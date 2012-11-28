@@ -6,5 +6,7 @@ before_install:
 
 script:
   - export OOC_LIBS=$PWD
-  - make test
+  - make all
+  - samples/test
+  - samples/exte
 
