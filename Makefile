@@ -7,6 +7,6 @@ clean:
 	rm -rf *_tmp .libs test
 
 test: all
-	test
+	./test
 
 .PHONY: clean test
