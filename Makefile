@@ -1,5 +1,5 @@
 OOC?=rock
-OOCFLAGS:=$(shell llvm-config --ldflags --libs core executionengine jit interpreter native) -v --linker=g++ +-DNDEBUG +-D_GNU_SOURCE +-D__STDC_LIMIT_MACROS +-D__STDC_CONSTANT_MACROS +-O3 +-fPIC +-fomit-frame-pointer
+OOCFLAGS:=$(shell llvm-config --cflags --ldflags --libs core executionengine jit interpreter native) -v --linker=g++ +-DNDEBUG +-D_GNU_SOURCE +-D__STDC_LIMIT_MACROS +-D__STDC_CONSTANT_MACROS +-O3 +-fPIC +-fomit-frame-pointer
 
 all: test exte
 
