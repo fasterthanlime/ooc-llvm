@@ -3,3 +3,6 @@ Description: Low Level Virtual Machine
 Libs: -lpthread, -lffi, -ldl, -lm
 Includes: llvm-c/Core.h, llvm-c/ExecutionEngine.h, llvm-c/Target.h, llvm-c/BitWriter.h
 SourcePath: source
+CustomPkg: llvm-config, core executionengine jit interpreter native, --cflags, --ldflags --libs
+Linker: g++
+Cflags: -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS
