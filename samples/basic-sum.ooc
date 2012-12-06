@@ -2,8 +2,6 @@ use llvm
 import llvm/[Core, ExecutionEngine, Target]
 import structs/ArrayList
 
-LLVMLinkInJIT: extern func
-
 main: func {
     LLVMLinkInJIT()
     Target initializeNative()

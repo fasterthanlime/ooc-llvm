@@ -33,6 +33,8 @@ ExecutionEngine: cover from LLVMExecutionEngineRef {
     dispose: extern(LLVMDisposeExecutionEngine) func
 
     runFunction: extern(LLVMRunFunction) func (fn: Value, numArgs: UInt, args: GenericValue*) -> GenericValue
+
+    recompileAndRelinkFunction: extern(LLVMRecompileAndRelinkFunction) func (fn: Value) -> Pointer
 }
 
 LLVMCreateJITCompiler: extern func (ExecutionEngine*, ModuleProvider, UInt, String*) -> Int

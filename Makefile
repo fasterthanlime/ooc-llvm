@@ -1,12 +1,13 @@
-all: test exte
 
-test:
-	rock -v $(OOCFLAGS) samples/test.ooc -o=samples/test
+OOC_FILES := $(wildcard samples/*.ooc)
+TESTS := $(patsubst samples/%.ooc,samples/%,$(OOC_FILES))
 
-exte:
-	rock -v $(OOCFLAGS) samples/exte.ooc -o=samples/exte
+all: $(TESTS)
+
+samples/%: samples/%.ooc
+	rock -v $(OOCFLAGS) $< -o=$@
 
 clean:
-	rm -rf *_tmp .libs samples/test samples/exte
+	rm -rf *_tmp .libs $(TESTS)
 
 .PHONY: clean test

@@ -1,6 +1,8 @@
 use llvm
 import structs/ArrayList
 
+LLVMLinkInJIT: extern func
+
 // Modules
 Context: cover from LLVMContextRef {
     new: extern(LLVMContextCreate) static func -> This

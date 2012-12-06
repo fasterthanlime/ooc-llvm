@@ -3,8 +3,6 @@ import llvm/[Core, ExecutionEngine, Target]
 import structs/ArrayList
 import math
 
-LLVMLinkInJIT: extern func
-
 main: func {
     LLVMLinkInJIT()
     Target initializeNative()
