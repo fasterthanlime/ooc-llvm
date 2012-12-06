@@ -3,11 +3,8 @@ before_install:
   - git clone --depth=1 git://github.com/nddrylliog/rock.git 
   - (cd rock && make -s quick-rescue)
   - export PATH=$PATH:$PWD/rock/bin
-  - echo "llvm cflags = $(llvm-config --cflags)"
 
 script:
   - export OOC_LIBS=$PWD
-  - make all
-  - samples/test
-  - samples/exte
+  - make run-tests
 

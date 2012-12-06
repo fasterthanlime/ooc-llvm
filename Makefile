@@ -2,7 +2,9 @@
 OOC_FILES := $(wildcard samples/*.ooc)
 TESTS := $(patsubst samples/%.ooc,samples/%,$(OOC_FILES))
 
-all: $(TESTS)
+all: tests
+
+tests: $(TESTS)
 
 samples/%: samples/%.ooc
 	rock -v $(OOCFLAGS) $< -o=$@
@@ -10,4 +12,10 @@ samples/%: samples/%.ooc
 clean:
 	rm -rf *_tmp .libs $(TESTS)
 
-.PHONY: clean test
+run-tests: tests
+	@for test in $(TESTS);\
+	do \
+	  $$test; \
+	done
+
+.PHONY: clean
