@@ -88,14 +88,18 @@ Type: cover from LLVMTypeRef {
 
     // Function types
     function: extern(LLVMFunctionType) static func (returnType: This,
-        paramTypes: This*, paramCount: UInt, varArg?: Int) -> This
+        paramTypes: This*, paramCount: UInt, varArg?: Bool) -> This
+
+    function: static func ~voidArgs (returnType: This) -> This {
+        function(returnType, null, 0, false)
+    }
 
     function: static func ~withArray (returnType: This, paramTypes: This[], varArg? := false) -> This {
-        function(returnType, paramTypes data, paramTypes length, varArg? as Int)
+        function(returnType, paramTypes data, paramTypes length, varArg?)
     }
 
     function: static func ~withArrayList (returnType: This, paramTypes: ArrayList<This>, varArg? := false) -> This {
-        function(returnType, paramTypes toArray() as This*, paramTypes size as UInt, varArg? as Int)
+        function(returnType, paramTypes toArray() as This*, paramTypes size as UInt, varArg?)
     }
 
     isFunctionVarArg: extern(LLVMIsFunctionVarArg) func -> Int
