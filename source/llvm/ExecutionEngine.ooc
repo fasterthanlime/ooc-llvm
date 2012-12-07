@@ -2,7 +2,7 @@ use llvm
 import Core
 
 // Generic values
-GenericValue: cover from LLVMGenericValueRef {
+LGenericValue: cover from LLVMGenericValueRef {
     newPointer: extern(LLVMCreateGenericValueOfPointer) static func ~pointer (Pointer) -> This
     newFloat: extern(LLVMCreateGenericValueOfFloat) static func ~float (LType, Double) -> This
 
@@ -16,7 +16,7 @@ GenericValue: cover from LLVMGenericValueRef {
     }
 }
 
-LLVMGenericValueToFloat: extern func (LType, GenericValue) -> Double
+LLVMGenericValueToFloat: extern func (LType, LGenericValue) -> Double
 
 // Execution engines
 ExecutionEngine: cover from LLVMExecutionEngineRef {
@@ -32,9 +32,9 @@ ExecutionEngine: cover from LLVMExecutionEngineRef {
 
     dispose: extern(LLVMDisposeExecutionEngine) func
 
-    runFunction: extern(LLVMRunFunction) func (fn: Value, numArgs: UInt, args: GenericValue*) -> GenericValue
+    runFunction: extern(LLVMRunFunction) func (fn: LValue, numArgs: UInt, args: LGenericValue*) -> LGenericValue
 
-    recompileAndRelinkFunction: extern(LLVMRecompileAndRelinkFunction) func (fn: Value) -> Pointer
+    recompileAndRelinkFunction: extern(LLVMRecompileAndRelinkFunction) func (fn: LValue) -> Pointer
 }
 
 LLVMCreateJITCompiler: extern func (ExecutionEngine*, ModuleProvider, UInt, String*) -> Int

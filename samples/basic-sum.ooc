@@ -41,10 +41,10 @@ main: func {
     provider := ModuleProvider new(myModule)
     engine := ExecutionEngine new(provider)
 
-    arg1 := GenericValue newInt(i32, 10, 0)
-    arg2 := GenericValue newInt(i32, 5,  0)
-    arg3 := GenericValue newInt(i32, 2,  0)
+    arg1 := LGenericValue newInt(i32, 10, 0)
+    arg2 := LGenericValue newInt(i32, 5,  0)
+    arg3 := LGenericValue newInt(i32, 2,  0)
 
-    result := engine runFunction(sum, 3, [arg1, arg2, arg3] as GenericValue*)
+    result := engine runFunction(sum, 3, [arg1, arg2, arg3] as LGenericValue*)
     result toInt(0) toString() println()
 }

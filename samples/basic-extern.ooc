@@ -22,7 +22,7 @@ main: func {
     provider := ModuleProvider new(myModule)
     engine := ExecutionEngine new(provider)
 
-    arg := GenericValue newFloat(double_, PI / 4.0)
-    result := engine runFunction(cos, 1, [arg] as GenericValue*)
+    arg := LGenericValue newFloat(double_, PI / 4.0)
+    result := engine runFunction(cos, 1, [arg] as LGenericValue*)
     result toFloat(double_) toString() println()
 }

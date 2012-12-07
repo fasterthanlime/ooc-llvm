@@ -19,7 +19,7 @@ main: func {
     builder := sumcos builder()
 
     {
-        piVal := Value constReal(double_, PI)
+        piVal := LValue constReal(double_, PI)
         cosarg := builder fmul(piVal, sumcos args[0], "cosarg")
         result := builder call(cos, [cosarg], "result")
         builder ret(result)

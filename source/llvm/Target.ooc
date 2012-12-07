@@ -32,7 +32,7 @@ Target: cover from LLVMTargetDataRef {
 
     preferredAlignmentOfType: extern(LLVMPreferredAlignmentOfType) func (LType) -> UInt
 
-    preferredAlignmentOfGlobal: extern(LLVMPreferredAlignmentOfGlobal) func (Value) -> UInt
+    preferredAlignmentOfGlobal: extern(LLVMPreferredAlignmentOfGlobal) func (LValue) -> UInt
 
     elementAtOffset: extern(LLVMElementAtOffset) func (LType, ULLong) -> UInt
 
