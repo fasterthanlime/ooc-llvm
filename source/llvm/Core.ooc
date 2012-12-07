@@ -141,12 +141,10 @@ LType: cover from LLVMTypeRef {
     constNull:        extern(LLVMConstNull)        func -> LValue
     constAllOnes:     extern(LLVMConstAllOnes)     func -> LValue
     getUndef:         extern(LLVMGetUndef)         func -> LValue
-//    constant?:        extern(LLVMIsConstant)       func -> Bool
-//    null?:            extern(LLVMIsNull)           func -> Bool
-//    undef?:           extern(LLVMIsUndef)          func -> Bool
+//  constant?:        extern(LLVMIsConstant)       func -> Bool
+//  null?:            extern(LLVMIsNull)           func -> Bool
+//  undef?:           extern(LLVMIsUndef)          func -> Bool
     constPointerNull: extern(LLVMConstPointerNull) func -> LValue
-
-    // Scalar constants
     
 }
 
