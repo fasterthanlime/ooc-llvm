@@ -20,7 +20,7 @@ LLVMGenericValueToFloat: extern func (LType, LGenericValue) -> Double
 
 // Execution engines
 ExecutionEngine: cover from LLVMExecutionEngineRef {
-    new: static func (mp: ModuleProvider) -> This {
+    new: static func (mp: LModuleProvider) -> This {
         e: This = null
         error := null as String
         LLVMCreateJITCompiler(e&, mp, 0, error&)
@@ -37,4 +37,4 @@ ExecutionEngine: cover from LLVMExecutionEngineRef {
     recompileAndRelinkFunction: extern(LLVMRecompileAndRelinkFunction) func (fn: LValue) -> Pointer
 }
 
-LLVMCreateJITCompiler: extern func (ExecutionEngine*, ModuleProvider, UInt, String*) -> Int
+LLVMCreateJITCompiler: extern func (ExecutionEngine*, LModuleProvider, UInt, String*) -> Int

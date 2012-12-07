@@ -30,7 +30,7 @@ main: func {
     myModule dump()
 
     // Now, to try to run the function!
-    provider := ModuleProvider new(myModule)
+    provider := LModuleProvider new(myModule)
     engine := ExecutionEngine new(provider)
 
     addr := engine recompileAndRelinkFunction(sumcos)

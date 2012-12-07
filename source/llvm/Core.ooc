@@ -43,17 +43,17 @@ LModule: cover from LLVMModuleRef {
 
     dump: extern(LLVMDumpModule) func
 
-    addFunction: func (name: String, functionType: LType) -> Function {
-        Function new(this, name, functionType)
+    addFunction: func (name: String, functionType: LType) -> LFunction {
+        LFunction new(this, name, functionType)
     }
 
-    addFunction: func ~withRetAndArgs (name: String, ret: LType, arguments: LType[]) -> Function {
-        Function new(this, name, LType function(ret, arguments))
+    addFunction: func ~withRetAndArgs (name: String, ret: LType, arguments: LType[]) -> LFunction {
+        LFunction new(this, name, LType function(ret, arguments))
     }
 
     addFunction: func ~withRetAndArgsWithName (name: String, ret: LType,
-             arguments: LType[], argNames: String[]) -> Function {
-        fn := Function new(this, name, LType function(ret, arguments))
+             arguments: LType[], argNames: String[]) -> LFunction {
+        fn := LFunction new(this, name, LType function(ret, arguments))
         fnArgs := fn args
         for(i in 0..argNames length) {
             fnArgs[i] setName(argNames[i])
@@ -61,7 +61,7 @@ LModule: cover from LLVMModuleRef {
         fn
     }
 
-    getFunction: extern(LLVMGetNamedFunction) func (name: CString) -> Function
+    getFunction: extern(LLVMGetNamedFunction) func (name: CString) -> LFunction
 
     writeBitcode: extern(LLVMWriteBitcodeToFile)       func ~toFile (path: CString) -> Int
     writeBitcode: extern(LLVMWriteBitcodeToFD)         func ~toFD (fd, shouldClose, unbuffered: Int) -> Int
@@ -188,19 +188,19 @@ LValue: cover from LLVMValueRef {
     }
 }
 
-LLVMGetFirstParam: extern func (Function) -> LValue
+LLVMGetFirstParam: extern func (LFunction) -> LValue
 LLVMGetNextParam:  extern func (LValue) -> LValue
 
-Function: cover from LValue {
+LFunction: cover from LValue {
     new: extern(LLVMAddFunction) static func (module: LModule, name: CString, functionType: LType) -> This
 
-    appendBasicBlock: extern(LLVMAppendBasicBlock) func (CString) -> BasicBlock
+    appendBasicBlock: extern(LLVMAppendBasicBlock) func (CString) -> LBasicBlock
 
-    builder: func -> Builder {
+    builder: func -> LBuilder {
         appendBasicBlock("entry") builder()
     }
 
-    build: func (fn: Func (Builder, ArrayList<LValue>)) {
+    build: func (fn: Func (LBuilder, ArrayList<LValue>)) {
         fn(builder(), args)
     }
 
@@ -219,26 +219,26 @@ Function: cover from LValue {
     }
 }
 
-BasicBlock: cover from LLVMBasicBlockRef {
-    builder: func -> Builder {
-        Builder new(this)
+LBasicBlock: cover from LLVMBasicBlockRef {
+    builder: func -> LBuilder {
+        LBuilder new(this)
     }
 }
 
-Builder: cover from LLVMBuilderRef {
+LBuilder: cover from LLVMBuilderRef {
     new: extern(LLVMCreateBuilder)          static func -> This
     new: extern(LLVMCreateBuilderInContext) static func ~inContext (LContext) -> This
 
-    new: static func ~atEnd (basicBlock: BasicBlock) -> This {
+    new: static func ~atEnd (basicBlock: LBasicBlock) -> This {
         builder := This new()
         builder positionAtEnd(basicBlock)
         builder
     }
 
-    position:               extern(LLVMPositionBuilder)           func (BasicBlock, LValue)
+    position:               extern(LLVMPositionBuilder)           func (LBasicBlock, LValue)
     positionBefore:         extern(LLVMPositionBuilderBefore)     func (LValue)
-    positionAtEnd:          extern(LLVMPositionBuilderAtEnd)      func (BasicBlock)
-    getInsertBlock:         extern(LLVMGetInsertBlock)            func -> BasicBlock
+    positionAtEnd:          extern(LLVMPositionBuilderAtEnd)      func (LBasicBlock)
+    getInsertBlock:         extern(LLVMGetInsertBlock)            func -> LBasicBlock
     clearInsertionPosition: extern(LLVMClearInsertionPosition)    func
     insert:                 extern(LLVMInsertIntoBuilder)         func (LValue)
     insert:                 extern(LLVMInsertIntoBuilderWithName) func ~withName (LValue, CString)
@@ -250,17 +250,17 @@ Builder: cover from LLVMBuilderRef {
     ret: extern(LLVMBuildRet)          func (LValue) -> LValue
     ret: extern(LLVMBuildAggregateRet) func ~aggregate (LValue*, UInt) -> LValue
     
-    br: extern(LLVMBuildBr)     func (dest: BasicBlock) -> LValue
-    br: extern(LLVMBuildCondBr) func ~cond (cond: LValue, iftrue: BasicBlock, iffalse: BasicBlock) -> LValue
+    br: extern(LLVMBuildBr)     func (dest: LBasicBlock) -> LValue
+    br: extern(LLVMBuildCondBr) func ~cond (cond: LValue, iftrue: LBasicBlock, iffalse: LBasicBlock) -> LValue
     
-    switch: extern(LLVMBuildSwitch) func (val: LValue, elseBlock: BasicBlock, numCases: UInt) -> LValue
-    invoke: extern(LLVMBuildInvoke) func (fn: LValue, args: LValue*, numArgs: UInt, thenBlock: BasicBlock, catchBlock: BasicBlock, name: CString) -> LValue
+    switch: extern(LLVMBuildSwitch) func (val: LValue, elseBlock: LBasicBlock, numCases: UInt) -> LValue
+    invoke: extern(LLVMBuildInvoke) func (fn: LValue, args: LValue*, numArgs: UInt, thenBlock: LBasicBlock, catchBlock: LBasicBlock, name: CString) -> LValue
 
     unwind:      extern(LLVMBuildUnwind)      func -> LValue
     unreachable: extern(LLVMBuildUnreachable) func -> LValue
 
     // Add a case to the switch instruction
-    addCase: extern(LLVMAddCase) static func (switchInstr: LValue, onVal: LValue, dest: BasicBlock)
+    addCase: extern(LLVMAddCase) static func (switchInstr: LValue, onVal: LValue, dest: LBasicBlock)
 
     // Arithmetic instructions
     add:       extern(LLVMBuildAdd)       func (lhs, rhs: LValue, name: CString) -> LValue
@@ -324,16 +324,16 @@ Builder: cover from LLVMBuilderRef {
     fpCast:         extern(LLVMBuildFPCast)         func (LValue, LType, CString) -> LValue
 
     // Comparison instructions
-    icmp: extern(LLVMBuildICmp) func (IntPredicate,  lhs, rhs: LValue, name: CString) -> LValue
-    fcmp: extern(LLVMBuildICmp) func (RealPredicate, lhs, rhs: LValue, name: CString) -> LValue
+    icmp: extern(LLVMBuildICmp) func (LIntPredicate,  lhs, rhs: LValue, name: CString) -> LValue
+    fcmp: extern(LLVMBuildICmp) func (LRealPredicate, lhs, rhs: LValue, name: CString) -> LValue
 
     // Miscellaneous instructions
     phi:            extern(LLVMBuildPhi)            func (LType, name: CString) -> LValue
-    call:           extern(LLVMBuildCall)           func (fn: Function, args: LValue*, numArgs: UInt, name: CString) -> LValue
-    call: func ~withArray (fn: Function, args: LValue[], name := "") -> LValue {
+    call:           extern(LLVMBuildCall)           func (fn: LFunction, args: LValue*, numArgs: UInt, name: CString) -> LValue
+    call: func ~withArray (fn: LFunction, args: LValue[], name := "") -> LValue {
         call(fn, args data, args length, name)
     }
-    call: func ~withArrayList (fn: Function, args: ArrayList<LValue>, name := "") -> LValue {
+    call: func ~withArrayList (fn: LFunction, args: ArrayList<LValue>, name := "") -> LValue {
         call(fn, args toArray() as LValue*, args size as UInt, name)
     }
     select:         extern(LLVMBuildSelect)         func (ifVal, thenVal, elseVal: LValue, name: CString) -> LValue
@@ -351,14 +351,14 @@ Builder: cover from LLVMBuilderRef {
 
 
 // Module providers
-ModuleProvider: cover from LLVMModuleProviderRef {
+LModuleProvider: cover from LLVMModuleProviderRef {
     new: extern(LLVMCreateModuleProviderForExistingModule) static func (LModule) -> This
 
     dispose: extern(LLVMDisposeModuleProvider) func
 }
 
 // Enums
-Attribute: extern(LLVMAttribute) enum {
+LAttribute: extern(LLVMAttribute) enum {
     zext:            extern(LLVMZExtAttribute)
     sext:            extern(LLVMSExtAttribute)
     noReturn:        extern(LLVMNoReturnAttribute)
@@ -381,7 +381,7 @@ Attribute: extern(LLVMAttribute) enum {
     naked:           extern(LLVMNakedAttribute)
 }
 
-TypeKind: extern(LLVMTypeKind) enum {
+LTypeKind: extern(LLVMTypeKind) enum {
     void_:     extern(LLVMVoidTypeKind)
     float_:    extern(LLVMFloatTypeKind)
     double_:   extern(LLVMDoubleTypeKind)
@@ -399,7 +399,7 @@ TypeKind: extern(LLVMTypeKind) enum {
     metadata:  extern(LLVMMetadataTypeKind)
 }
 
-Linkage: extern(LLVMLinkage) enum {
+LLinkage: extern(LLVMLinkage) enum {
     external:            extern(LLVMExternalLinkage)
     availableExternally: extern(LLVMAvailableExternallyLinkage)
     linkOnceAny:         extern(LLVMLinkOnceAnyLinkage)
@@ -417,13 +417,13 @@ Linkage: extern(LLVMLinkage) enum {
     linkerPrivate:       extern(LLVMLinkerPrivateLinkage)
 }
 
-Visibility: extern(LLVMVisibility) enum {
+LVisibility: extern(LLVMVisibility) enum {
     default:   extern(LLVMDefaultVisibility)
     hidden:    extern(LLVMHiddenVisibility)
     protected: extern(LLVMProtectedVisibility)
 }
 
-CallConv: extern(LLVMCallConv) enum {
+LCallConv: extern(LLVMCallConv) enum {
     ccall:       extern(LLVMCCallConv)
     fast:        extern(LLVMFastCallConv)
     cold:        extern(LLVMColdCallConv)
@@ -431,7 +431,7 @@ CallConv: extern(LLVMCallConv) enum {
     x86fastcall: extern(LLVMX86FastcallCallConv)
 }
 
-IntPredicate: extern(LLVMIntPredicate) enum {
+LIntPredicate: extern(LLVMIntPredicate) enum {
     eq:  extern(LLVMIntEQ)
     ne:  extern(LLVMIntNE)
     ugt: extern(LLVMIntUGT)
@@ -444,7 +444,7 @@ IntPredicate: extern(LLVMIntPredicate) enum {
     sle: extern(LLVMIntSLE)
 }
 
-RealPredicate: extern(LLVMRealPredicate) enum {
+LRealPredicate: extern(LLVMRealPredicate) enum {
     truePred:  extern(LLVMRealPredicateTrue)
     falsePred: extern(LLVMRealPredicateFalse)
     oeq:       extern(LLVMRealOEQ)

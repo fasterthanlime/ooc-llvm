@@ -19,7 +19,7 @@ main: func {
     myModule dump()
 
     // Now, to try to run the function!
-    provider := ModuleProvider new(myModule)
+    provider := LModuleProvider new(myModule)
     engine := ExecutionEngine new(provider)
 
     arg := LGenericValue newFloat(double_, PI / 4.0)
