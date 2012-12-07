@@ -10,7 +10,7 @@ main: func {
     myModule := LModule new("my_module")
 
     // Get the i32 type
-    i32 := Type int32()
+    i32 := LType int32()
 
     // Now we need a function named 'sum' using this type. Functions are not
     // free-standing; thye need to be contained in a module.

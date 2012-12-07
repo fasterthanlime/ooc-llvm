@@ -9,7 +9,7 @@ main: func {
     
     myModule := LModule new("exte")
 
-    double_ := Type double_()
+    double_ := LType double_()
 
     // external interface for cos
     cos := myModule addFunction("cos", double_, [double_], ["x"])

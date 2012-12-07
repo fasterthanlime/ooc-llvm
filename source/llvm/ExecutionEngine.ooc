@@ -4,19 +4,19 @@ import Core
 // Generic values
 GenericValue: cover from LLVMGenericValueRef {
     newPointer: extern(LLVMCreateGenericValueOfPointer) static func ~pointer (Pointer) -> This
-    newFloat: extern(LLVMCreateGenericValueOfFloat) static func ~float (Type, Double) -> This
+    newFloat: extern(LLVMCreateGenericValueOfFloat) static func ~float (LType, Double) -> This
 
-    newInt: extern(LLVMCreateGenericValueOfInt) static func (Type, ULLong, Int) -> This
+    newInt: extern(LLVMCreateGenericValueOfInt) static func (LType, ULLong, Int) -> This
 
     intWidth: extern(LLVMGenericValueIntWidth) func -> UInt
     toInt: extern(LLVMGenericValueToInt) func (isSigned: Int) -> ULLong
     toPointer: extern(LLVMGenericValueToPointer) func -> Pointer
-    toFloat: func (ty: Type) -> Double {
+    toFloat: func (ty: LType) -> Double {
         LLVMGenericValueToFloat(ty, this)
     }
 }
 
-LLVMGenericValueToFloat: extern func (Type, GenericValue) -> Double
+LLVMGenericValueToFloat: extern func (LType, GenericValue) -> Double
 
 // Execution engines
 ExecutionEngine: cover from LLVMExecutionEngineRef {

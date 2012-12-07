@@ -4,7 +4,7 @@ import structs/ArrayList
 LLVMLinkInJIT: extern func
 
 // Modules
-Context: cover from LLVMContextRef {
+LContext: cover from LLVMContextRef {
     new: extern(LLVMContextCreate) static func -> This
 
     getGlobal: extern(LLVMGetGlobalContext) static func -> This
@@ -18,7 +18,7 @@ Context: cover from LLVMContextRef {
     fp128:     extern(LLVMFP128TypeInContext)    func -> Value
     ppc_fp128: extern(LLVMPPCFP128TypeInContext) func -> Value
 
-    struct_: extern(LLVMStructTypeInContext) func (elementTypes: Type*, elementCount: UInt, isPacked: Int) -> Value
+    struct_: extern(LLVMStructTypeInContext) func (elementTypes: LType*, elementCount: UInt, isPacked: Int) -> Value
 
     void_:  extern(LLVMVoidTypeInContext)  func -> Value
     label:  extern(LLVMLabelTypeInContext)  func -> Value
@@ -27,7 +27,7 @@ Context: cover from LLVMContextRef {
 
 LModule: cover from LLVMModuleRef {
     new: extern(LLVMModuleCreateWithName)          static func (CString) -> This
-    new: extern(LLVMModuleCreateWithNameInContext) static func ~inContext (CString, Context) -> This
+    new: extern(LLVMModuleCreateWithNameInContext) static func ~inContext (CString, LContext) -> This
 
     dispose: extern(LLVMDisposeModule) func
 
@@ -37,23 +37,23 @@ LModule: cover from LLVMModuleRef {
     getTarget: extern(LLVMGetTarget) func -> CString
     setTarget: extern(LLVMSetTarget) func (triple: CString)
 
-    addTypeName:    extern(LLVMAddTypeName)    func (name: CString, Type)
+    addTypeName:    extern(LLVMAddTypeName)    func (name: CString, LType)
     deleteTypeName: extern(LLVMDeleteTypeName) func (name: CString)
-    getTypeByName:  extern(LLVMGetTypeByName)  func (name: CString) -> Type
+    getTypeByName:  extern(LLVMGetTypeByName)  func (name: CString) -> LType
 
     dump: extern(LLVMDumpModule) func
 
-    addFunction: func (name: String, functionType: Type) -> Function {
+    addFunction: func (name: String, functionType: LType) -> Function {
         Function new(this, name, functionType)
     }
 
-    addFunction: func ~withRetAndArgs (name: String, ret: Type, arguments: Type[]) -> Function {
-        Function new(this, name, Type function(ret, arguments))
+    addFunction: func ~withRetAndArgs (name: String, ret: LType, arguments: LType[]) -> Function {
+        Function new(this, name, LType function(ret, arguments))
     }
 
-    addFunction: func ~withRetAndArgsWithName (name: String, ret: Type,
-             arguments: Type[], argNames: String[]) -> Function {
-        fn := Function new(this, name, Type function(ret, arguments))
+    addFunction: func ~withRetAndArgsWithName (name: String, ret: LType,
+             arguments: LType[], argNames: String[]) -> Function {
+        fn := Function new(this, name, LType function(ret, arguments))
         fnArgs := fn args
         for(i in 0..argNames length) {
             fnArgs[i] setName(argNames[i])
@@ -69,7 +69,7 @@ LModule: cover from LLVMModuleRef {
 }
 
 // Types
-Type: cover from LLVMTypeRef {
+LType: cover from LLVMTypeRef {
     // Integer types
     int1:  extern(LLVMInt1Type)  static func -> This
     int8:  extern(LLVMInt8Type)  static func -> This
@@ -151,31 +151,31 @@ Type: cover from LLVMTypeRef {
 }
 
 Value: cover from LLVMValueRef {
-    type:    extern(LLVMTypeOf)       func -> Type
+    type:    extern(LLVMTypeOf)       func -> LType
     getName: extern(LLVMGetValueName) func -> CString
     setName: extern(LLVMSetValueName) func (CString)
     dump:    extern(LLVMDumpValue)    func
 
-    constPointerNull: extern(LLVMConstPointerNull) static func (Type) -> This
-    constInt: extern(LLVMConstInt) static func (Type, ULLong, Bool) -> This
-    constInt: static func ~signed (ty: Type, val: ULLong) -> This {
+    constPointerNull: extern(LLVMConstPointerNull) static func (LType) -> This
+    constInt: extern(LLVMConstInt) static func (LType, ULLong, Bool) -> This
+    constInt: static func ~signed (ty: LType, val: ULLong) -> This {
         constInt(ty, val, true)
     }
-    constInt: extern(LLVMConstIntOfStringAndSize) static func ~cstring (Type, CString, UInt, UInt8) -> This
-    constInt: static func ~string (ty: Type, str: String, radix: UInt8) -> This {
+    constInt: extern(LLVMConstIntOfStringAndSize) static func ~cstring (LType, CString, UInt, UInt8) -> This
+    constInt: static func ~string (ty: LType, str: String, radix: UInt8) -> This {
         constInt(ty, str toCString(), str size, radix)
     }
-    constReal: extern(LLVMConstReal) static func (Type, Double) -> This
-    constReal: extern(LLVMConstRealOfStringAndSize) static func ~cstring (Type, CString, UInt) -> This
-    constReal: static func ~string (ty: Type, str: String) -> This {
+    constReal: extern(LLVMConstReal) static func (LType, Double) -> This
+    constReal: extern(LLVMConstRealOfStringAndSize) static func ~cstring (LType, CString, UInt) -> This
+    constReal: static func ~string (ty: LType, str: String) -> This {
         constReal(ty, str toCString(), str size)
     }
     constString: extern(LLVMConstString) static func (CString, UInt, Bool) -> This
     constString: static func ~string (str: String, dontNullTerminate? := false) -> This {
         constString(str toCString(), str size, dontNullTerminate?)
     }
-    constArray: extern(LLVMConstArray) static func (Type, Value*, UInt) -> This
-    constArray: static func ~withArray (elemTy: Type, constVals: Value[]) -> This {
+    constArray: extern(LLVMConstArray) static func (LType, Value*, UInt) -> This
+    constArray: static func ~withArray (elemTy: LType, constVals: Value[]) -> This {
         constArray(elemTy, constVals data, constVals length)
     }
     constStruct: extern(LLVMConstStruct) static func (Value*, UInt, Bool) -> This
@@ -192,7 +192,7 @@ LLVMGetFirstParam: extern func (Function) -> Value
 LLVMGetNextParam:  extern func (Value) -> Value
 
 Function: cover from Value {
-    new: extern(LLVMAddFunction) static func (module: LModule, name: CString, functionType: Type) -> This
+    new: extern(LLVMAddFunction) static func (module: LModule, name: CString, functionType: LType) -> This
 
     appendBasicBlock: extern(LLVMAppendBasicBlock) func (CString) -> BasicBlock
 
@@ -227,7 +227,7 @@ BasicBlock: cover from LLVMBasicBlockRef {
 
 Builder: cover from LLVMBuilderRef {
     new: extern(LLVMCreateBuilder)          static func -> This
-    new: extern(LLVMCreateBuilderInContext) static func ~inContext (Context) -> This
+    new: extern(LLVMCreateBuilderInContext) static func ~inContext (LContext) -> This
 
     new: static func ~atEnd (basicBlock: BasicBlock) -> This {
         builder := This new()
@@ -287,10 +287,10 @@ Builder: cover from LLVMBuilderRef {
     not:       extern(LLVMBuildNot)       func (val: Value, name: CString) -> Value
 
     // Memory instructions
-    malloc:      extern(LLVMBuildMalloc)      func (Type, CString) -> Value
-    alloca:      extern(LLVMBuildAlloca)      func (Type, CString) -> Value
-    arrayMalloc: extern(LLVMBuildArrayMalloc) func (Type, Value, CString) -> Value
-    arrayAlloca: extern(LLVMBuildArrayMalloc) func (Type, Value, CString) -> Value
+    malloc:      extern(LLVMBuildMalloc)      func (LType, CString) -> Value
+    alloca:      extern(LLVMBuildAlloca)      func (LType, CString) -> Value
+    arrayMalloc: extern(LLVMBuildArrayMalloc) func (LType, Value, CString) -> Value
+    arrayAlloca: extern(LLVMBuildArrayMalloc) func (LType, Value, CString) -> Value
 
     free:  extern(LLVMBuildFree)  func (pointer: Value) -> Value
     load:  extern(LLVMBuildLoad)  func (pointer: Value, name: CString) -> Value
@@ -304,31 +304,31 @@ Builder: cover from LLVMBuilderRef {
     globalStringPtr: extern(LLVMBuildGlobalStringPtr) func (str: CString, name: CString) -> Value
 
     // Cast instructions
-    trunc:          extern(LLVMBuildTrunc)          func (Value, Type, CString) -> Value
-    zext:           extern(LLVMBuildZExt)           func (Value, Type, CString) -> Value
-    sext:           extern(LLVMBuildSExt)           func (Value, Type, CString) -> Value
-    fptoui:         extern(LLVMBuildFPToUI)         func (Value, Type, CString) -> Value
-    fptosi:         extern(LLVMBuildFPToSI)         func (Value, Type, CString) -> Value
-    uitofp:         extern(LLVMBuildUIToFP)         func (Value, Type, CString) -> Value
-    sitofp:         extern(LLVMBuildSIToFP)         func (Value, Type, CString) -> Value
-    fptrunc:        extern(LLVMBuildFPTrunc)        func (Value, Type, CString) -> Value
-    fpext:          extern(LLVMBuildFPExt)          func (Value, Type, CString) -> Value
-    ptrtoint:       extern(LLVMBuildPtrToInt)       func (Value, Type, CString) -> Value
-    inttoptr:       extern(LLVMBuildIntToPtr)       func (Value, Type, CString) -> Value
-    bitcast:        extern(LLVMBuildBitCast)        func (Value, Type, CString) -> Value
-    zextOrBitcast:  extern(LLVMBuildZExtOrBitCast)  func (Value, Type, CString) -> Value
-    sextOrBitcast:  extern(LLVMBuildSExtOrBitCast)  func (Value, Type, CString) -> Value
-    truncOrBitcast: extern(LLVMBuildTruncOrBitCast) func (Value, Type, CString) -> Value
-    pointerCast:    extern(LLVMBuildPointerCast)    func (Value, Type, CString) -> Value
-    intCast:        extern(LLVMBuildIntCast)        func (Value, Type, CString) -> Value
-    fpCast:         extern(LLVMBuildFPCast)         func (Value, Type, CString) -> Value
+    trunc:          extern(LLVMBuildTrunc)          func (Value, LType, CString) -> Value
+    zext:           extern(LLVMBuildZExt)           func (Value, LType, CString) -> Value
+    sext:           extern(LLVMBuildSExt)           func (Value, LType, CString) -> Value
+    fptoui:         extern(LLVMBuildFPToUI)         func (Value, LType, CString) -> Value
+    fptosi:         extern(LLVMBuildFPToSI)         func (Value, LType, CString) -> Value
+    uitofp:         extern(LLVMBuildUIToFP)         func (Value, LType, CString) -> Value
+    sitofp:         extern(LLVMBuildSIToFP)         func (Value, LType, CString) -> Value
+    fptrunc:        extern(LLVMBuildFPTrunc)        func (Value, LType, CString) -> Value
+    fpext:          extern(LLVMBuildFPExt)          func (Value, LType, CString) -> Value
+    ptrtoint:       extern(LLVMBuildPtrToInt)       func (Value, LType, CString) -> Value
+    inttoptr:       extern(LLVMBuildIntToPtr)       func (Value, LType, CString) -> Value
+    bitcast:        extern(LLVMBuildBitCast)        func (Value, LType, CString) -> Value
+    zextOrBitcast:  extern(LLVMBuildZExtOrBitCast)  func (Value, LType, CString) -> Value
+    sextOrBitcast:  extern(LLVMBuildSExtOrBitCast)  func (Value, LType, CString) -> Value
+    truncOrBitcast: extern(LLVMBuildTruncOrBitCast) func (Value, LType, CString) -> Value
+    pointerCast:    extern(LLVMBuildPointerCast)    func (Value, LType, CString) -> Value
+    intCast:        extern(LLVMBuildIntCast)        func (Value, LType, CString) -> Value
+    fpCast:         extern(LLVMBuildFPCast)         func (Value, LType, CString) -> Value
 
     // Comparison instructions
     icmp: extern(LLVMBuildICmp) func (IntPredicate,  lhs, rhs: Value, name: CString) -> Value
     fcmp: extern(LLVMBuildICmp) func (RealPredicate, lhs, rhs: Value, name: CString) -> Value
 
     // Miscellaneous instructions
-    phi:            extern(LLVMBuildPhi)            func (Type, name: CString) -> Value
+    phi:            extern(LLVMBuildPhi)            func (LType, name: CString) -> Value
     call:           extern(LLVMBuildCall)           func (fn: Function, args: Value*, numArgs: UInt, name: CString) -> Value
     call: func ~withArray (fn: Function, args: Value[], name := "") -> Value {
         call(fn, args data, args length, name)
@@ -337,7 +337,7 @@ Builder: cover from LLVMBuilderRef {
         call(fn, args toArray() as Value*, args size as UInt, name)
     }
     select:         extern(LLVMBuildSelect)         func (ifVal, thenVal, elseVal: Value, name: CString) -> Value
-    vaArg:          extern(LLVMBuildVAArg)          func (list: Value, Type, name: CString) -> Value
+    vaArg:          extern(LLVMBuildVAArg)          func (list: Value, LType, name: CString) -> Value
     extractElement: extern(LLVMBuildExtractElement) func (vector, index: Value, name: CString) -> Value
     insertElement:  extern(LLVMBuildInsertElement)  func (vector, val, index: Value, name: CString) -> Value
     shuffleVector:  extern(LLVMBuildShuffleVector)  func (v1, v2, mask: Value, name: CString) -> Value
