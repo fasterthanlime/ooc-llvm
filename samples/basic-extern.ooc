@@ -7,7 +7,7 @@ main: func {
     LLVMLinkInJIT()
     Target initializeNative()
     
-    myModule := Module new("exte")
+    myModule := LModule new("exte")
 
     double_ := Type double_()
 

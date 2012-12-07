@@ -7,7 +7,7 @@ main: func {
     Target initializeNative()
     
     // Create an (empty) module.
-    myModule := Module new("my_module")
+    myModule := LModule new("my_module")
 
     // Get the i32 type
     i32 := Type int32()

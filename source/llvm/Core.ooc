@@ -25,7 +25,7 @@ Context: cover from LLVMContextRef {
     opaque: extern(LLVMOpaqueTypeInContext) func -> Value
 }
 
-Module: cover from LLVMModuleRef {
+LModule: cover from LLVMModuleRef {
     new: extern(LLVMModuleCreateWithName)          static func (CString) -> This
     new: extern(LLVMModuleCreateWithNameInContext) static func ~inContext (CString, Context) -> This
 
@@ -192,7 +192,7 @@ LLVMGetFirstParam: extern func (Function) -> Value
 LLVMGetNextParam:  extern func (Value) -> Value
 
 Function: cover from Value {
-    new: extern(LLVMAddFunction) static func (module: Module, name: CString, functionType: Type) -> This
+    new: extern(LLVMAddFunction) static func (module: LModule, name: CString, functionType: Type) -> This
 
     appendBasicBlock: extern(LLVMAppendBasicBlock) func (CString) -> BasicBlock
 
@@ -352,7 +352,7 @@ Builder: cover from LLVMBuilderRef {
 
 // Module providers
 ModuleProvider: cover from LLVMModuleProviderRef {
-    new: extern(LLVMCreateModuleProviderForExistingModule) static func (Module) -> This
+    new: extern(LLVMCreateModuleProviderForExistingModule) static func (LModule) -> This
 
     dispose: extern(LLVMDisposeModuleProvider) func
 }
