@@ -1,6 +1,9 @@
 use llvm
 import structs/ArrayList
 
+include llvm-c/Transforms/Scalar
+include llvm-c/Analysis
+
 LLVMLinkInJIT: extern func
 
 // Modules
@@ -60,6 +63,8 @@ LModule: cover from LLVMModuleRef {
         }
         fn
     }
+
+    createFunctionPassManager: extern(LLVMCreateFunctionPassManagerForModule) func -> LPassManager
 
     getFunction: extern(LLVMGetNamedFunction) func (name: CString) -> LFunction
 
@@ -215,6 +220,8 @@ LFunction: cover from LValue {
             argsList
         }
     }
+
+    verify: extern(LLVMVerifyFunction) func (action: LVerifierFailureAction) -> Bool
 }
 
 LBasicBlock: cover from LLVMBasicBlockRef {
@@ -460,3 +467,46 @@ LRealPredicate: extern(LLVMRealPredicate) enum {
     ule:       extern(LLVMRealULE)
     une:       extern(LLVMRealUNE)
 }
+
+LPassManager: cover from LLVMPassManagerRef {
+
+    run: extern(LLVMRunFunctionPassManager) func (f: LValue) -> Bool
+
+    // Scalar transforms
+    addAggressiveDCEPass: extern(LLVMAddAggressiveDCEPass) func
+    addCFGSimplificationPass: extern(LLVMAddCFGSimplificationPass) func
+    addDeadStoreEliminationPass: extern(LLVMAddDeadStoreEliminationPass) func
+    addGVNPass: extern(LLVMAddGVNPass) func
+    addIndVarSimplifyPass: extern(LLVMAddIndVarSimplifyPass) func
+    addInstructionCombiningPass: extern(LLVMAddInstructionCombiningPass) func
+    addJumpThreadingPass: extern(LLVMAddJumpThreadingPass) func
+    addLoopDeletionPass: extern(LLVMAddLoopDeletionPass) func
+    addLoopIdiomPass: extern(LLVMAddLoopIdiomPass) func
+    addLoopRotatePass: extern(LLVMAddLoopRotatePass) func
+    addLoopUnrollPass: extern(LLVMAddLoopUnrollPass) func
+    addLoopUnswitchPass: extern(LLVMAddLoopUnswitchPass) func
+    addMemCpyOptPass: extern(LLVMAddMemCpyOptPass) func
+    addPromoteMemoryToRegisterPass: extern(LLVMAddPromoteMemoryToRegisterPass) func
+    addReassociatePass: extern(LLVMAddReassociatePass) func
+    addSCCPPass: extern(LLVMAddSCCPPass) func
+    addScalarReplAggregatesPass: extern(LLVMAddScalarReplAggregatesPass) func
+    addScalarReplAggregatesPassSSA: extern(LLVMAddScalarReplAggregatesPassSSA) func
+    addScalarReplAggregatesPassWithThreshold: extern(LLVMAddScalarReplAggregatesPassWithThreshold) func
+    addSimplifyLibCallsPass: extern(LLVMAddSimplifyLibCallsPass) func
+    addTailCallEliminationPass: extern(LLVMAddTailCallEliminationPass) func
+    addConstantPropagationPass: extern(LLVMAddConstantPropagationPass) func
+    addDemoteMemoryToRegisterPass: extern(LLVMAddDemoteMemoryToRegisterPass) func
+    addVerifierPass: extern(LLVMAddVerifierPass) func
+    addCorrelatedValuePropagationPass: extern(LLVMAddCorrelatedValuePropagationPass) func
+    addEarlyCSEPass: extern(LLVMAddEarlyCSEPass) func
+    addLowerExpectIntrinsicPass: extern(LLVMAddLowerExpectIntrinsicPass) func
+    addBasicAliasAnalysisPass: extern(LLVMAddBasicAliasAnalysisPass) func
+
+}
+
+LVerifierFailureAction: enum {
+    abortProcess: extern(LLVMAbortProcessAction)
+    printMessage: extern(LLVMPrintMessageAction)
+    returnStatus: extern(LLVMReturnStatusAction)
+}
+
