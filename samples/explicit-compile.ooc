@@ -5,7 +5,7 @@ import math
 
 main: func {
     LLVMLinkInJIT()
-    Target initializeNative()
+    LTarget initializeNative()
     
     myModule := LModule new("exte")
 
@@ -31,7 +31,7 @@ main: func {
 
     // Now, to try to run the function!
     provider := LModuleProvider new(myModule)
-    engine := ExecutionEngine new(provider)
+    engine := LExecutionEngine new(provider)
 
     addr := engine recompileAndRelinkFunction(sumcos)
     f: Func (Double) -> Double = (addr, null) as Closure

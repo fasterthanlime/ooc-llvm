@@ -1,7 +1,7 @@
 use llvm
 import llvm/Core
 
-Target: cover from LLVMTargetDataRef {
+LTarget: cover from LLVMTargetDataRef {
     initializeAllInfos: extern(LLVMInitializeAllTargetInfos) static func
 
     initializeAll: extern(LLVMInitializeAllTargets) static func

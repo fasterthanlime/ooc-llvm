@@ -4,7 +4,7 @@ import structs/ArrayList
 
 main: func {
     LLVMLinkInJIT()
-    Target initializeNative()
+    LTarget initializeNative()
     
     // Create an (empty) module.
     myModule := LModule new("my_module")
@@ -39,7 +39,7 @@ main: func {
 
     // Now, to try to run the function!
     provider := LModuleProvider new(myModule)
-    engine := ExecutionEngine new(provider)
+    engine := LExecutionEngine new(provider)
 
     arg1 := LGenericValue newInt(i32, 10, 0)
     arg2 := LGenericValue newInt(i32, 5,  0)
