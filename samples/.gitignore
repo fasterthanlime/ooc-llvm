@@ -1,3 +1,2 @@
-basic-sum
-basic-extern
-explicit-compile
+*
+!*.ooc
